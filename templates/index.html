@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Flask of Amortizado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy: #1F4E79;
+            --navy-dark: #0d2e4a;
+            --navy-light: #2d6599;
+            --gold: #C9A84C;
+            --cream: #F8F5EF;
+            --text: #1a1a1a;
+            --muted: #6b7280;
+            --border: #e2ddd6;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--navy-dark);
+            padding: 2.5rem 3rem;
+            border-bottom: 3px solid var(--gold);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            border: 40px solid rgba(201, 168, 76, 0.08);
+            border-radius: 50%;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            right: 80px;
+            width: 160px;
+            height: 160px;
+            border: 30px solid rgba(201, 168, 76, 0.05);
+            border-radius: 50%;
+        }
+
+        .header-inner {
+            max-width: 860px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 600;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.5);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        main {
+            flex: 1;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            width: 100%;
+        }
+
+        .steps {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .step {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2rem 2.5rem;
+            display: grid;
+            grid-template-columns: 48px 1fr;
+            gap: 1.5rem;
+            align-items: start;
+            transition: border-color 0.2s;
+        }
+
+        .step:hover { border-color: var(--navy-light); }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: var(--navy-dark);
+            color: var(--gold);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--navy-dark);
+        }
+
+        .step-content p {
+            font-size: 0.9rem;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1.4rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--navy);
+            color: white;
+        }
+
+        .btn-primary:hover { background: var(--navy-dark); }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--navy);
+            border: 1.5px solid var(--navy);
+        }
+
+        .btn-outline:hover {
+            background: var(--navy);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .file-upload {
+            border: 1.5px dashed var(--border);
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .file-upload:hover, .file-upload.dragover {
+            border-color: var(--navy);
+            background: rgba(31, 78, 121, 0.03);
+        }
+
+        .file-upload input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .file-upload-text {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .file-upload-text span {
+            color: var(--navy);
+            font-weight: 500;
+        }
+
+        .file-name {
+            font-size: 0.85rem;
+            color: var(--navy);
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .status-bar {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 2px;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .status-bar.running {
+            display: block;
+            background: rgba(31, 78, 121, 0.08);
+            color: var(--navy);
+            border-left: 3px solid var(--navy);
+        }
+
+        .status-bar.success {
+            display: block;
+            background: rgba(16, 100, 60, 0.08);
+            color: #10643c;
+            border-left: 3px solid #10643c;
+        }
+
+        .status-bar.error {
+            display: block;
+            background: rgba(180, 40, 40, 0.08);
+            color: #b42828;
+            border-left: 3px solid #b42828;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 2.5rem 0;
+        }
+
+        footer {
+            background: var(--navy-dark);
+            padding: 1.5rem 3rem;
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.35);
+            line-height: 1.7;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        footer a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .powered {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 0.75rem;
+            justify-content: center;
+        }
+
+        .powered span {
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.25);
+        }
+
+        .powered-badge {
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gold);
+            border: 1px solid rgba(201, 168, 76, 0.3);
+            padding: 2px 8px;
+            border-radius: 2px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .running .pulse { animation: pulse 1.5s ease-in-out infinite; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <div class="logo-label">Legal Intelligence Tool</div>
+        <h1>The Flask of Amortizado</h1>
+        <div class="subtitle">An SEC Debt Analyzer powered by EDGAR</div>
+    </div>
+</header>
+
+<main>
+    <div class="steps">
+
+        <div class="step">
+            <div class="step-number">I</div>
+            <div class="step-content">
+                <h3>Download the input template</h3>
+                <p>Add your company tickers to the template. Mark each company as Public or Private — private companies have limited SEC data and will be skipped.</p>
+                <a class="btn btn-outline" href="/download-template">Download Template</a>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">II</div>
+            <div class="step-content">
+                <h3>Upload your completed file</h3>
+                <p>Upload the filled template. Only .xlsx files are accepted.</p>
+                <div class="file-upload" id="dropzone">
+                    <input type="file" id="fileInput" accept=".xlsx" onchange="handleFile(this)">
+                    <div class="file-upload-text">
+                        <span>Choose a file</span> or drag and drop here
+                    </div>
+                    <div class="file-name" id="fileName"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">III</div>
+            <div class="step-content">
+                <h3>Run the analysis</h3>
+                <p>Analysis typically takes 2–4 minutes depending on the number of companies. Your results will download automatically when complete.</p>
+                <button class="btn btn-primary" id="runBtn" onclick="runAnalysis()" disabled>Run Analysis</button>
+                <div class="status-bar" id="status"></div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<footer>
+    <p>
+        The Flask of Amortizado processes SEC public filings via the EDGAR database.
+        Uploaded files are deleted immediately after analysis. No client data is stored or retained.
+        Analysis is powered by <a href="https://anthropic.com" target="_blank">Anthropic Claude</a> AI.
+    </p>
+    <div class="powered">
+        <span>Powered by</span>
+        <div class="powered-badge">SEC EDGAR</div>
+        <div class="powered-badge">Claude AI</div>
+    </div>
+</footer>
+
+<script>
+    function handleFile(input) {
+        const file = input.files[0];
+        if (file) {
+            document.getElementById('fileName').innerText = file.name;
+            document.getElementById('runBtn').disabled = false;
+        }
+    }
+
+    const dropzone = document.getElementById('dropzone');
+    dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            document.getElementById('fileInput').files = e.dataTransfer.files;
+            document.getElementById('fileName').innerText = file.name;
+            document.getElementById('runBtn').disabled = false;
+        }
+    });
+
+    async function runAnalysis() {
+        const file = document.getElementById('fileInput').files[0];
+        if (!file) return;
+
+        const btn = document.getElementById('runBtn');
+        const status = document.getElementById('status');
+
+        btn.disabled = true;
+        status.className = 'status-bar running';
+        status.innerHTML = '<span class="pulse">Running analysis — this may take a few minutes...</span>';
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'sec_analysis.xlsx';
+                a.click();
+                status.className = 'status-bar success';
+                status.innerText = 'Analysis complete. Your file has downloaded.';
+            } else {
+                const text = await response.text();
+                status.className = 'status-bar error';
+                status.innerText = `Error: ${text}`;
+            }
+        } catch (err) {
+            status.className = 'status-bar error';
+            status.innerText = 'Something went wrong. Please try again.';
+        }
+
+        btn.disabled = false;
+    }
+</script>
+
+</body>
+</html>
