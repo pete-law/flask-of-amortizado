@@ -3,3 +3,5 @@ temp/
 __pycache__/
 *.pyc
 sec-edgar-filings/
+.DS_Store
+sec_analysis.xlsx
