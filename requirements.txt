@@ -1,0 +1,7 @@
+flask
+anthropic
+edgartools
+openpyxl
+python-dotenv
+requests
+beautifulsoup4
