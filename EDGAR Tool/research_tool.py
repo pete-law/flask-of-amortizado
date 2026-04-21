@@ -13,7 +13,7 @@ from edgar import Company, set_identity
 from datetime import datetime
 
 # Setup
-client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY2"))
 set_identity(os.getenv("EDGAR_EMAIL"))
 
 CURRENT_YEAR = datetime.now().year
