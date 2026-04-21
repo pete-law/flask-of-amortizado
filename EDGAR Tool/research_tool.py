@@ -3,7 +3,8 @@ import json
 import openpyxl
 import os
 from dotenv import load_dotenv
-load_dotenv()
+from pathlib import Path
+load_dotenv(Path.home() / "secrets" / ".env")
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
